@@ -13,7 +13,7 @@ button.addEventListener("click", function() {
 // #2 ================================================
 
 // 1
- let age: number = 50;
+let age: number = 50;
 let naming: string = 'Max';
 let toggle: boolean = true;
 let empty: null = null;
@@ -85,6 +85,82 @@ const page2: DatabaseDate = {
   status: 'close',
 }
 
+let revenue:number = 500;
+let bonus: number = 1000;
 
+let res: number = revenue + bonus;
 
+// Union - ето возможность сказать что в той или иной переменной у нас могут находиться различніе типі при различніх обстоятельствах
 
+function logId(id: string | number | boolean) {
+  if (typeof id === 'string') {
+    console.log(id.toLocaleLowerCase());
+  } else if(typeof id === 'number') {
+    console.log(++id);
+  } else {
+    console.log(id);
+  }
+}
+
+function objLog(obj: { a: number } | { b: number }) {
+  if ('a' in obj) {
+    console.log(obj.a);
+  } else {
+    console.log(obj.b)
+  }
+}
+
+// ================== Type Aliases
+
+type httpMethods = 'post' | 'get'; // - прописуємо слово type і вказуємо щосамо воно містить і цю назву можна підставити замість того щоб писати окремо post && get
+
+function fetchWidthAuth(url: string, method: httpMethods): 1 | -1 {
+  console.log(url, method);
+  return 1
+}
+
+fetchWidthAuth('s', 'post');
+
+// or one more exemple
+
+type ObjData = {
+  name: string,
+  age: number,
+  skills: string[]
+}
+
+type ObjRole = {
+  position: string
+}
+
+type ObjDataAndRole = ObjData & ObjRole
+
+let user: ObjDataAndRole = {
+  name: 'Mango',
+  age: 18,
+  skills: ['JS', 'React'],
+  position: 'TeamLEad'
+} // - етот обьект обязательно должен состоять из двух type так как мі указали оператор "&" 
+
+// ================== Interfaces
+
+interface ObjData2 {
+  name: string,
+  age: number,
+  skills: string[],
+  log: (id: number) => string
+} // - отличие Interfaces от Type Aliases тем что в начале пишется interface і не нужно ставить "="
+
+interface UserWidthRole extends ObjData2 {
+  roleId: number
+} // - создалі еще один интерфейс и унаследовали свойства от интерфейса ObjData2 и теперь UserWidthRole - интерфейс который соеденяет в себе два интерфейса
+
+let user2: UserWidthRole = {
+  name: 'Mango',
+  age: 18,
+  skills: ['JS', 'React'],
+  roleId: 1,
+  log(id) {
+    return ''
+  }
+}
