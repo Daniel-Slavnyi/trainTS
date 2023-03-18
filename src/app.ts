@@ -112,7 +112,7 @@ function objLog(obj: { a: number } | { b: number }) {
 
 // ================== Type Aliases
 
-type httpMethods = 'post' | 'get'; // - прописуємо слово type і вказуємо щосамо воно містить і цю назву можна підставити замість того щоб писати окремо post && get
+type httpMethods = 'post' | 'get'; // - прописуємо слово type і вказуємо що саме воно містить і цю назву можна підставити замість того щоб писати окремо post && get
 
 function fetchWidthAuth(url: string, method: httpMethods): 1 | -1 {
   console.log(url, method);
@@ -161,6 +161,175 @@ let user2: UserWidthRole = {
   skills: ['JS', 'React'],
   roleId: 1,
   log(id) {
+    console.log(id);
     return ''
   }
 }
+
+// ================== Interfaces VS Type Aliases
+
+type ID = string | number; // - если работаем спримитивами
+
+interface IDI {
+  ID: string | number
+} // - если работаеем с обьектами
+
+
+// ================== Optional
+
+interface User {
+  login: string;
+  password?: string;
+}
+
+const userNew: User = {
+  login: 'mango.mail',
+} // - то есть если описать интерфейс и в обьекте пропустить свойство , будет ошибка
+
+interface User2 {
+  login: string;
+  password?: string;
+}
+
+const userNew2: User2 = {
+  login: 'mango.mail',
+} // - optional - ето знак вопроса перед двоеточием ,которий говорит тайп скрипту что есто свойство может и не біть в обьекте
+
+//пример optional с функцией
+
+function muptiply(first: number, second?: number): number {
+  if (!second) {
+    return first * first
+  }
+
+  return first * second
+} // - тут указуем что второй параметр функции не обязателен і в теле функции прописуем условие ,если второго параметра не будет то умнож первое число на себя же ,а в остальном случае первое на второе
+
+const muptiply1 = muptiply(5);
+const muptiply2 = muptiply(5, 2);
+console.log(muptiply1);
+console.log(muptiply2);
+
+//- пример со значением по умолчанию
+
+function muptiplySecond(first: number, second: number = 5): number {
+  if (!second) {
+    return first * first
+  }
+
+  return first * second
+} // -тут вместо optional(знак вопроса) , добавляется значение поумолчанию и если вдруг параметр не будет передан топодставится "5"
+
+const muptiply3 = muptiplySecond(5);
+const muptiply4 = muptiplySecond(5, 2);
+console.log(muptiply3);
+console.log(muptiply4);
+
+// ============ Упражнение - типизацияответа от сервера
+// variant1
+
+// enum StatusCode1 {
+//   SUCCSESS = 'succsess',
+//   FAILD = 'faild',
+// } // - enum
+
+// interface body {
+//   sum: number,
+//   from: number,
+//   to: number
+// }
+
+// interface bodyRequest extends body { }
+
+// interface succsessRes {
+//   dataBasedId: number,
+//   sum: number,
+//   from: number,
+//   to: number
+// }
+// interface faildRes {
+//     errorMessage: 'string',
+//     errorCode: 'number'
+// }
+
+// interface response {
+//   status: StatusCode1,
+//   data: succsessRes | faildRes
+// }
+
+
+// async function getFaqs1(req: body): Promise<response> {
+//   const res = await fetch('/faqs', {
+//     method: 'POST',
+//     body: JSON.stringify(req)
+//   })
+
+//   const data = await res.json();
+//   return data
+// }
+
+//variant2 best practice (ми типизировали то что принемает функцияи то что она возвращяет при помощи интерфейсов)
+
+enum StatusCode1 {
+  SUCCSESS = 'succsess',
+  FAILD = 'faild',
+} // - enum
+
+interface body {
+  sum: number,
+  from: number,
+  to: number
+}
+
+interface bodyRequest extends body { }
+
+interface succsessRes extends body {
+  dataBasedId: number,
+}
+interface faildRes {
+    errorMessage: 'string',
+    errorCode: 'number'
+}
+
+interface responseSuccsess {
+  status: StatusCode1.SUCCSESS,
+  data: succsessRes
+}
+
+interface responseFaild {
+  status: StatusCode1.FAILD,
+  data: faildRes
+}
+
+
+async function getFaqs1(req: body): Promise<responseSuccsess | responseFaild> {
+  const res = await fetch('/faqs', {
+    method: 'POST',
+    body: JSON.stringify(req)
+  })
+
+  const data = await res.json();
+  return data
+}
+
+//================================ привидение типов
+
+let a: number = 5;
+
+let b: string = a.toString(); // - ми привели "а" намбер в строку при помощи метода и положили в переменную
+
+//================================ type guard
+
+// Type guard - ето функция которая возвращяет буливое значение и пдставляется в условие в теле другой функции
+
+function isString(x: string | number): x is string {
+  return x === 'string'
+} // - то есть сюда мі можем передать или строку или намбер и функция возвращяет буливое значение(ето и тайп гард)
+
+function logId1(id: string | number) {
+  if (isString(id)) {
+    console.log(id);
+  } else {
+    console.log(id)
+  }
+} // - ми использовали TypeGuard для условия в функции которое проверяет строка ли аргумент которий ми передали или нет 
