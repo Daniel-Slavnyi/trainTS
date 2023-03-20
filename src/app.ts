@@ -1,3 +1,5 @@
+'use strict'
+
 const button = document.querySelector("button")! as HTMLButtonElement;
 const input1 = document.getElementById("num1")! as HTMLInputElement;
 const input2 = document.getElementById("num2")! as HTMLInputElement;
@@ -13,7 +15,7 @@ button.addEventListener("click", function() {
 // #2 ================================================
 
 // 1
-let age: number = 50;
+let age3: number = 50;
 let naming: string = 'Max';
 let toggle: boolean = true;
 let empty: null = null;
@@ -125,7 +127,7 @@ fetchWidthAuth('s', 'post');
 
 type ObjData = {
   name: string,
-  age: number,
+  age1: number,
   skills: string[]
 }
 
@@ -137,7 +139,7 @@ type ObjDataAndRole = ObjData & ObjRole
 
 let user: ObjDataAndRole = {
   name: 'Mango',
-  age: 18,
+  age1: 18,
   skills: ['JS', 'React'],
   position: 'TeamLEad'
 } // - етот обьект обязательно должен состоять из двух type так как мі указали оператор "&" 
@@ -146,7 +148,7 @@ let user: ObjDataAndRole = {
 
 interface ObjData2 {
   name: string,
-  age: number,
+  age1: number,
   skills: string[],
   log: (id: number) => string
 } // - отличие Interfaces от Type Aliases тем что в начале пишется interface і не нужно ставить "="
@@ -157,7 +159,7 @@ interface UserWidthRole extends ObjData2 {
 
 let user2: UserWidthRole = {
   name: 'Mango',
-  age: 18,
+  age1: 18,
   skills: ['JS', 'React'],
   roleId: 1,
   log(id) {
@@ -177,12 +179,12 @@ interface IDI {
 
 // ================== Optional
 
-interface User {
+interface User3 {
   login: string;
   password?: string;
 }
 
-const userNew: User = {
+const userNew: User3 = {
   login: 'mango.mail',
 } // - то есть если описать интерфейс и в обьекте пропустить свойство , будет ошибка
 
@@ -332,4 +334,106 @@ function logId1(id: string | number) {
   } else {
     console.log(id)
   }
-} // - ми использовали TypeGuard для условия в функции которое проверяет строка ли аргумент которий ми передали или нет 
+} // - ми использовали TypeGuard для условия в функции которое проверяет строка ли аргумент которий ми передали или нет
+
+// example #2
+interface User5 {
+  name: string,
+  email: string,
+  login: string
+}
+
+interface Admin {
+  name: string,
+  role: number
+}
+
+const user22: User5 = {
+  name: 'Mango',
+  email: 'mail.com',
+  login: 'Orange'
+}
+
+function isAdmin(user: User | Admin): user is Admin {
+  return 'role' in user
+} // - this is typeGuard
+
+function setRoleZero(user: User | Admin) {
+  if (isAdmin(user)) {
+    user.role = 0
+  } else {
+    throw new Error("this is not an admin")
+  }
+}
+
+// =============================== делаем тайп гард ответа
+
+enum StatusCode2 {
+  SUCCSESS = 'succsess',
+  FAILD = 'faild',
+} // - enum
+
+interface body {
+  sum: number,
+  from: number,
+  to: number
+}
+
+interface bodyRequest extends body { }
+
+interface succsessRes extends body {
+  dataBasedId: number,
+}
+interface faildRes {
+    errorMessage: 'string',
+    errorCode: 'number'
+}
+
+interface responseSuccsess1 {
+  status: StatusCode2.SUCCSESS,
+  data: succsessRes
+}
+
+interface responseFaild1 {
+  status: StatusCode2.FAILD,
+  data: faildRes
+}
+
+function isSuccsess(res: responseSuccsess1 | responseFaild1): res is responseSuccsess1 {
+  if (res.status === StatusCode2.SUCCSESS) {
+    return true
+  } else {
+    return false
+  }
+}
+
+function getIdFromData(res: responseSuccsess1 | responseFaild1): number {
+  if (isSuccsess(res)) {
+    return res.data.dataBasedId
+  } else {
+    throw new Error(res.data.errorMessage)
+  }
+}
+
+// =============================== aserts
+// Aserts - клас-функция, которая в случає если условие не виполняется кидает какуюто ошибку
+
+interface User {
+  name: string
+}
+
+const aa = {} // - ми хотим проверить являится ли наш обьект нашим пользователем
+
+
+assertUser(aa)
+
+aa.name = 'Mango'
+
+
+function assertUser(obj: unknown): asserts obj is User {
+  if (typeof obj === 'object' && !!obj && 'name' in obj) {
+    return 
+  }
+
+ throw new Error('this is not our user')
+} // - this is asert
